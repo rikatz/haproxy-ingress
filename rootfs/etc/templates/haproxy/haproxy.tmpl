@@ -494,11 +494,15 @@ backend {{ $backend.ID }}
 {{- /*------------------------------------*/}}
 {{- if and $global.ModSecurity.Endpoints $backend.HasModsec }}
     filter spoe engine modsecurity config /etc/haproxy/spoe-modsecurity.conf
+    tcp-request content set-var(txn.namespace) str('{{ $backend.Namespace }}')
+    tcp-request content set-var(txn.ingressname) str('{{ $backend.Name }}')
 {{- $wafCfg := $backend.PathConfig "WAF" }}
 {{- range $i, $waf := $wafCfg.Items }}
+{{- /*DUMB EXAMPLE THAT NEEDS TO BE IMPLEMENTED*/}}
+    tcp-request content set-var(txn.ignorerules) str('930201')
 {{- if eq $waf.Mode "deny" }}
 {{- range $pathIDs := $wafCfg.PathIDs $i }}
-    http-request deny if { var(txn.modsec.code) -m int gt 0 }
+    http-request deny if { var(sess.modsec.modsecurity) -m bool }
         {{- if $pathIDs }} { var(txn.pathID) {{ $pathIDs }} }{{ end }}
 {{- end }}
 {{- end }}

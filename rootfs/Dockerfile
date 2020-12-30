@@ -17,9 +17,7 @@ RUN apk --no-cache add socat openssl lua5.3 lua-socket dumb-init
 
 COPY . /
 
-RUN addgroup -g 1001 haproxy\
- && adduser -u 1001 -G haproxy -D -s /bin/false haproxy\
- && mkdir -p /var/empty /etc/haproxy /var/lib/haproxy /var/run/haproxy\
+RUN mkdir -p /var/empty /etc/haproxy /var/lib/haproxy /var/run/haproxy\
  && chown -R haproxy:haproxy /etc/haproxy /var/lib/haproxy /var/run/haproxy\
  && chmod 0 /var/empty
 
